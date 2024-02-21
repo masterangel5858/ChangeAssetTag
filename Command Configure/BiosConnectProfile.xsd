@@ -1,0 +1,339 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--// DELL PROPRIETARY INFORMATION
+//
+// This software is confidential.  Dell Inc., or one of its subsidiaries, has supplied this
+// software to you under the terms of a license agreement,nondisclosure agreement or both.
+// You may not copy, disclose, or use this software except in accordance with those terms.
+//
+// Copyright 2021 Dell Inc. or its subsidiaries.  All Rights Reserved.
+//
+// DELL INC. MAKES NO REPRESENTATIONS OR WARRANTIES ABOUT THE SUITABILITY OF THE SOFTWARE,
+// EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
+// DELL SHALL NOT BE LIABLE FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING,
+// MODIFYING OR DISTRIBUTING THIS SOFTWARE OR ITS DERIVATIVES. -->
+<xs:schema targetNamespace="biosconnect"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    xmlns:bc="biosconnect"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    version="1.0">
+  <xs:simpleType name="LanguageType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="en"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="VersionType">
+    <xs:restriction base="xs:decimal">
+      <xs:fractionDigits value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="InterfaceType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Wired"/>
+      <xs:enumeration value="Wi-Fi"/>
+      <xs:enumeration value="Auto"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="CertType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="pem"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="UrlType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="https"/>
+      <xs:enumeration value="http"/>      
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="FormatType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="xml"/>
+      <xs:enumeration value="json"/>      
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="HashAlgo">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="sha1"/>
+      <xs:enumeration value="sha256"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="OauthGrantType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="grant_type=client_credentials"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ReuseType">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name= "WiredInterfaceType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value=""/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SsidNameType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="3"/>
+      <xs:maxLength value="32"/>
+      <xs:whiteSpace value="collapse"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="AuthInfoType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="PreSharedKey"/>
+      <xs:enumeration value="CaptivePortal"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name= "PreSharedKeyType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value=""/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name= "FieldType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="TextBox"/>
+      <xs:enumeration value="CheckBox"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="CertInfoType">
+    <xs:sequence>    
+      <xs:element name="cert" type="xs:string"/>
+      </xs:sequence>
+    <xs:attribute name="Type" type="bc:CertType"/>
+  </xs:complexType>
+
+  <xs:complexType name="UrlInfoType">
+    <xs:sequence>
+      <xs:element name="url" type="xs:string"/>
+      <xs:element name="CertInfo" type="bc:CertInfoType" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="Type" type="bc:UrlType"/>
+    <!--<xs:assert test="not(Type = 'https') or Cert"/>-->
+  </xs:complexType>
+
+  <xs:complexType name="SignedType">
+    <xs:sequence>
+      <xs:element name="CertInfo" type="bc:CertInfoType" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="Value" type="xs:boolean"/>
+  </xs:complexType>
+    
+  <xs:complexType name="UrlResponseInfoType">
+    <xs:sequence>
+      <xs:element name="Signed" type="bc:SignedType">
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="Type" type="bc:FormatType"/>
+    <!--<xs:assert test="not(Signed = '1') or Cert"/>-->
+  </xs:complexType>
+
+  <xs:complexType name="FiledNameType">
+    <xs:attribute name="FieldName" type="xs:string" use="required"/>
+    <xs:attribute name="Display" type="xs:boolean" use="required"/>
+    <xs:attribute name="HideValue" type="xs:boolean" use="required"/>
+    <xs:attribute name="Submission" type="xs:boolean" use="required"/>
+    <xs:attribute name="Field" type="bc:FieldType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="PasswordFieldType">
+    <xs:attribute name="Password" type="xs:string" use="required"/>
+    <xs:attribute name="Display" type="xs:boolean" use="required"/>
+    <xs:attribute name="HideValue" type="xs:boolean" use="required"/>
+    <xs:attribute name="Submission" type="xs:boolean" use="required"/>
+    <xs:attribute name="Field" type="bc:FieldType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="MacFieldType">
+    <xs:attribute name="MacAddress" type="xs:string" use="required" />
+    <xs:attribute name="Display" type="xs:boolean" use="required"/>
+    <xs:attribute name="HideValue" type="xs:boolean" use="required" />
+    <xs:attribute name="Submission" type="xs:boolean" use="required"/>
+    <xs:attribute name="Field" type="bc:FieldType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="TandC-FieldType">
+    <xs:attribute name="TandC" type="xs:string" use="required" />
+    <xs:attribute name="Display" type="xs:boolean" use="required"/>
+    <xs:attribute name="HideValue" type="xs:boolean" use="required"/>
+    <xs:attribute name="Submission" type="xs:boolean" use="required"/>
+    <xs:attribute name="Field" type="bc:FieldType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="FormInfoType">
+    <xs:sequence>
+      <xs:element name="Title" type="xs:string"/>
+      <xs:element name="FieldName" type="bc:FiledNameType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="FieldName-String" type="bc:FiledNameType" />
+      <xs:element name="MacField" type="bc:MacFieldType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="TandC-Field" type="bc:TandC-FieldType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="TandC-String" type = "bc:TandC-FieldType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CaptivePortalType">
+    <xs:sequence>
+      <xs:element name="FormInfo" type="bc:FormInfoType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="UrlInfo" type="bc:UrlInfoType"/>
+      <xs:element name="UrlResponseInfo" type="bc:UrlResponseInfoType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AuthorizationInoType">
+    <xs:sequence>
+      <xs:element name="PreSharedKey" type="bc:PreSharedKeyType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="CaptivePortal" type="bc:CaptivePortalType" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="AuthInfo" type="bc:AuthInfoType" use="required"/>
+    <!--<xs:assert test="not(AuthInfo = 'PreSharedKey') or PreSharedKey"/>-->
+    <!--<xs:assert test="not(AuthInfo = 'CaptivePortal') or CaptivePortal"/>-->
+  </xs:complexType>
+
+  <xs:complexType name="SsidType">
+    <xs:sequence>
+      <xs:element name="SsidName" type="bc:SsidNameType"/>
+      <xs:element name="AuthorizationInfo" type="bc:AuthorizationInoType"/>
+    </xs:sequence>
+    <xs:attribute name="Hidden" type="xs:boolean" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="WifiInterfaceType">
+    <xs:sequence>
+      <xs:element name="ssid" type="bc:SsidType" minOccurs="0" maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:complexType name="SecurityInfoType">
+    <xs:sequence>
+      <xs:element name="Algorithm" type="bc:HashAlgo"/>
+      <xs:element name="Digest" type="xs:string"/>
+      <xs:element name="SignValue" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ConnectionProfileType">
+    <xs:sequence>
+      <xs:element name="Wired" type="bc:WiredInterfaceType" minOccurs="0"  maxOccurs="1"/>
+      <xs:element name="Wi-Fi" type="bc:WifiInterfaceType" minOccurs="0"  maxOccurs="1"/>
+      <xs:element name="Auto" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="IntegrityInfo" type="bc:SecurityInfoType"/>
+    </xs:sequence>
+    <xs:attribute name="PreferredInterface" type="bc:InterfaceType" use="required"/>
+    <!--<xs:assert test="not(PreferredInterface = 'Wired') or Wired"/>-->
+    <!--<xs:assert test="not(PreferredInterface = 'Wi-Fi') or Wi-Fi"/>-->
+    <!--<xs:assert test="not(PreferredInterface = 'Auto') or Auto"/>-->
+  </xs:complexType>
+
+  <xs:complexType name="CloudAppProfileType">
+    <xs:sequence>
+      <xs:element name="UrlInfo" type="bc:UrlInfoType"/>
+      <xs:element name="UrlResponseInfo" type="bc:UrlResponseInfoType"/>
+      <xs:element name="IntegrityInfo" type="bc:SecurityInfoType"/>
+      <xs:element name="OAuth" type="bc:OauthInfoType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="OauthInfoType">
+    <xs:sequence>
+      <xs:element name="clientId" type="xs:string"/>
+      <xs:element name="clientSecret" type="xs:string"/>
+      <xs:element name="OauthGrant" type="bc:OauthGrantType"/>
+      <xs:element name="UrlInfo" type="bc:UrlInfoType"/>
+      <xs:element name="UrlResponseInfo" type="bc:UrlResponseInfoType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CsosProfileType">
+    <xs:sequence>
+      <xs:element name="OauthInfo" type="bc:OauthInfoType" minOccurs="0" maxOccurs = "1"/>
+      <xs:element name="UrlInfo" type="bc:UrlInfoType"/>
+      <xs:element name="UrlResponseInfo" type="bc:UrlResponseInfoType"/>
+      <xs:element name="UseCloudAppCert" type="bc:ReuseType" />
+      <xs:element name="IntegrityInfo" type="bc:SecurityInfoType"/>
+    </xs:sequence>
+    <xs:attribute name="OauthEnabled" type="xs:boolean" use="required"/>
+    <!--<xs:assert test="not(OauthEnabled = '1') or OauthInfo"/>-->
+  </xs:complexType>
+
+  <xs:complexType name="FotaProfileType">
+    <xs:sequence>
+      <xs:element name="UrlInfo" type="bc:UrlInfoType"/>
+      <xs:element name="UrlResponseInfo" type="bc:UrlResponseInfoType"/>
+      <xs:element name="IntegrityInfo" type="bc:SecurityInfoType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="HttpBootProfileType">
+    <xs:sequence>
+      <xs:element name="UrlInfo" type="bc:UrlInfoType" minOccurs="0" maxOccurs = "1"/>
+      <xs:element name="CertInfo" type="bc:CertInfoType" minOccurs="0" maxOccurs = "1"/>
+      <xs:element name="IntegrityInfo" type="bc:SecurityInfoType"/>
+    </xs:sequence>
+    <xs:attribute name="Type" type="xs:boolean" use="required"/>
+    <!--<xs:assert test="not(Type = '1') or UrlInfo"/>-->
+    <!--<xs:assert test="not(Type = '0') or CertInfo"/>-->
+  </xs:complexType>
+
+  <xs:complexType name="BIOSConnectProfileType">
+    <xs:sequence>
+      <xs:element name="ConnectionProfile" type = "bc:ConnectionProfileType"/>
+      <xs:element name="CloudAppProfile" type = "bc:CloudAppProfileType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="CsosProfile" type = "bc:CsosProfileType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="FotaProfile" type = "bc:FotaProfileType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="HttpBootProfile" type = "bc:HttpBootProfileType" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="Version" type="bc:VersionType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="Manifest">
+    <xs:sequence>
+      <xs:element name="BIOSConnectProfile" type = "bc:BIOSConnectProfileType"/>
+    </xs:sequence>
+    <xs:attribute name="Language" type="bc:LanguageType" use="required"/>
+  </xs:complexType>
+
+  <xs:element name="ConnectionProfile" type="bc:ConnectionProfileType">
+    <xs:annotation>
+      <xs:documentation>Root element for Connection profile.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="CloudAppProfile" type="bc:CloudAppProfileType">
+    <xs:annotation>
+      <xs:documentation>Root element for Cloud App profile.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="CsosProfile" type="bc:CsosProfileType">
+    <xs:annotation>
+      <xs:documentation>Root element for CSOS profile.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="FotaProfile" type="bc:FotaProfileType">
+    <xs:annotation>
+      <xs:documentation>Root element for FOTA profile.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="HttpBootProfile" type="bc:HttpBootProfileType">
+    <xs:annotation>
+      <xs:documentation>Root element for Http Boot profile.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+
+</xs:schema>
